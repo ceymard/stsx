@@ -395,4 +395,4 @@ export function Switch<T>(val: T) {
   return new Switcher(val)
 }
 
-// export * from './template'
+export * from './template'
