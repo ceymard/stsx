@@ -1,0 +1,6 @@
+{
+  "main": "module/index.js",
+  "devDependencies": {
+    "@types/node": "^12.12.14"
+  }
+}
