@@ -1,3 +1,5 @@
+import * as fs from 'fs'
+
 export interface Writable {
   write(str: string): any
 }
@@ -134,12 +136,22 @@ export class Raw extends STSXNode {
   }
 }
 
+
+export class Include extends STSXNode {
+  constructor(public path: string) {
+    super(null!)
+  }
+  render(out: Writable) {
+    out.write(fs.readFileSync(this.path, 'utf-8'))
+  }
+}
+
 /**
  * Include a file contents, optionally html-escaped
  * @param path Path to the file to be included.
  */
 export function include(path: string) {
-
+  return new Include(path)
 }
 
 export function raw(s: string): STSXNode {
