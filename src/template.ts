@@ -1,4 +1,4 @@
-import { Child, STSXNode, raw } from "./types"
+import { Child, STSXNode, raw, Writable } from "./types"
 
 
 export interface Block {
@@ -21,7 +21,7 @@ export function create_block(name: string, append = false) {
   }
 
   class Super extends STSXNode {
-    render(out: NodeJS.WritableStream) {
+    render(out: Writable) {
       out.write(`<!-- Super ${name ?? 'Block'} -->`)
       var chlds = children.shift()
       for (var c of (chlds ?? []))
@@ -31,7 +31,7 @@ export function create_block(name: string, append = false) {
   }
 
   class Display extends STSXNode {
-    render(out: NodeJS.WritableStream) {
+    render(out: Writable) {
       out.write(`<!-- Display ${name ?? 'Block'} -->`)
       const display = () => {
         var chlds = children.shift()

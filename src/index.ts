@@ -1,4 +1,5 @@
-import { STSXNode, Child, SVGAttributes, HTMLAttributes, EmptyAttributes, Component, Attrs, ComponentFn, ArrayChild, FragmentNode } from './types'
+import { STSXNode, Child, SVGAttributes, HTMLAttributes, EmptyAttributes, Component, Attrs, ComponentFn, ArrayChild, FragmentNode, Writable } from './types'
+
 export * from './types'
 
 
@@ -36,7 +37,8 @@ export function s<A>(elt: new (a: A) => Component<A>, attrs: A | null, ...childr
 export function s(elt: any, attrs: Attrs | null, ...children: Child[]): STSXNode {
   var s!: STSXNode
 
-  var {class: cls, style, ...rest} = attrs || {}
+  attrs = attrs ?? {}
+  var {class: cls, style, ...rest} = attrs
   children = flatten(children)
   const is_basic_node = typeof elt === 'string'
 
@@ -312,7 +314,7 @@ export class Repeater<T> extends STSXNode {
     public separator?: Child
   ) { super(null!) }
 
-  render(out: NodeJS.WritableStream) {
+  render(out: Writable) {
     out.write('<!-- Repeat -->')
     const rd = this.renderer
     const sep = this.separator
@@ -338,7 +340,7 @@ export class IfNode<T> extends STSXNode {
     super(null!)
   }
 
-  render(out: NodeJS.WritableStream) {
+  render(out: Writable) {
     out.write(`<!-- If -->`)
     if (this.cond) {
       this.renderChild(out, this.then(this.cond!))
@@ -373,7 +375,7 @@ export class Switcher<T> extends STSXNode {
     super(null!)
   }
 
-  render(out: NodeJS.WritableStream) {
+  render(out: Writable) {
     out.write(`<!-- Switch -->`)
     for (var i = 0, cs = this.cases, l = cs.length; i < l; i++) {
       var [cond, rd] = cs[i]

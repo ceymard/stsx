@@ -1,4 +1,6 @@
-import { PassThrough } from "stream"
+export interface Writable {
+  write(str: string): any
+}
 
 export type UnArray<T> = T extends (infer U)[] ? never : T
 
@@ -50,7 +52,7 @@ export class STSXNode {
     return null
   }
 
-  render(out: NodeJS.WritableStream) {
+  render(out: Writable) {
     out.write(`<${this.name}`)
     const attrs = this.attrs
     const attr_keys = Object.keys(attrs)
@@ -74,19 +76,18 @@ export class STSXNode {
     out.write(`</${this.name}>`)
   }
 
-  [inspect](): string {
-    const outstr = new PassThrough()
+  toString(): string {
     const parts = [] as string[]
-    outstr._write = (c: string, encoding: string, cbk: any) => {
-      parts.push(c)
-      cbk(null)
-    }
+    const outstr = {write(s: string) { parts.push(s) }}
     this.render(outstr)
-    outstr.push(null)
     return parts.join('')
   }
 
-  renderChild(out: NodeJS.WritableStream, child: Child) {
+  [inspect](): string {
+    return this.toString()
+  }
+
+  renderChild(out: Writable, child: Child) {
     if (child instanceof STSXNode)
       child.render(out)
     else if (typeof child === 'string' || typeof child === 'number' || typeof child === 'boolean') {
@@ -94,7 +95,7 @@ export class STSXNode {
     }
   }
 
-  renderChildren(out: NodeJS.WritableStream) {
+  renderChildren(out: Writable) {
     for (var i = 0, c = this.children, l = c.length; i < l; i++) {
       var child = c[i]
       this.renderChild(out, child)
@@ -107,14 +108,14 @@ export class FragmentNode extends STSXNode {
     super(null!)
     this.children = children
   }
-  render(out: NodeJS.WritableStream) {
+  render(out: Writable) {
     this.renderChildren(out)
   }
 }
 
 
 export class CDataNode extends STSXNode {
-  render(out: NodeJS.WritableStream) {
+  render(out: Writable) {
     out.write('<![CDATA[')
     out.write(this.name)
     out.write(']]>')
@@ -128,7 +129,7 @@ export function cdata(cdata: string) {
 
 
 export class Raw extends STSXNode {
-  render(out: NodeJS.WritableStream) {
+  render(out: Writable) {
     out.write(this.name)
   }
 }
