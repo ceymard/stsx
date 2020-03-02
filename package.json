@@ -1,4 +1,6 @@
 {
+  "name": "stsx",
+  "version": "0.0.1",
   "main": "module/index.js",
   "devDependencies": {
     "@types/node": "^12.12.14"
