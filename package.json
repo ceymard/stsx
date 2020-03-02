@@ -3,6 +3,10 @@
   "version": "0.0.1",
   "main": "module/index.js",
   "devDependencies": {
-    "@types/node": "^12.12.14"
+    "@types/node": "^12.12.14",
+    "@types/resolve": "^1.14.0"
+  },
+  "dependencies": {
+    "resolve": "^1.15.1"
   }
 }

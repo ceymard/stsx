@@ -1,4 +1,6 @@
 import * as fs from 'fs'
+import * as resolve from 'resolve'
+import * as pth from 'path'
 
 export interface Writable {
   write(str: string): any
@@ -142,7 +144,21 @@ export class Include extends STSXNode {
     super(null!)
   }
   render(out: Writable) {
-    out.write(fs.readFileSync(this.path, 'utf-8'))
+    const path = this.path
+    try {
+      //
+      out.write(fs.readFileSync(path, 'utf-8'))
+    } catch (e) {
+      if (path[0] !== '.') {
+        var [modname, ...rest] = path.split(new RegExp(pth.sep))
+        // console.log(path, modname, rest, pth.sep)
+        var resolved = resolve.sync(modname)
+        // console.log(resolved)
+        var found_file = pth.join(pth.dirname(resolved), rest.join(pth.sep))
+        // console.log(found_file)
+        out.write(fs.readFileSync(found_file, 'utf-8'))
+      }
+    }
   }
 }
 
