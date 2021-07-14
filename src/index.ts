@@ -18,6 +18,7 @@ function flatten<T>(c: T[], res = [] as NonNullable<T>[]): NonNullable<T>[] {
 
 const global_attributes = new Set([
   'accesskey',
+  'style',
   'contenteditable',
   'dir',
   'draggable',
@@ -38,7 +39,7 @@ export function s(elt: any, attrs: Attrs | null, ...children: Child[]): STSXNode
   var s!: STSXNode
 
   attrs = attrs ?? {}
-  var {class: cls, style, ...rest} = attrs
+  var {class: cls, ...rest} = attrs
   children = flatten(children)
   const is_basic_node = typeof elt === 'string'
 
@@ -86,20 +87,6 @@ export function s(elt: any, attrs: Attrs | null, ...children: Child[]): STSXNode
         const old = s.attrs.class
         s.attrs.class = old != null ? old + ' ' + klss.join(' ') : klss.join(' ')
         // compute the class attribute
-      } else if (key === 'style') {
-        var _s = attrs.style
-        var stl = Array.isArray(_s) ? flatten(_s!) : [_s]
-        var res = [] as string[]
-        for (var j = 0, l4 = stl.length; j < l4; j++) {
-          var st = stl[j]
-          if (typeof st === 'string') {
-            res.push(st)
-          } else {
-            // do stuff with the keys
-          }
-          // FIXME
-        }
-        // compute the style attribute
       } else if (global_attributes.has(key) || is_basic_node) {
         a[key] = (rest as any)[key]
       }

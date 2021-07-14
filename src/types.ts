@@ -64,7 +64,7 @@ export class STSXNode {
       for (var i = 0, l = attr_keys.length; i < l; i++) {
         var att = attr_keys[i]
         if (attrs[att] != null)
-          out.write(` ${att}="${safe_html(attrs[att], true)}"`)
+          out.write(` ${att}="${safe_html(attrs[att].toString(), true)}"`)
       }
     }
 
@@ -140,7 +140,7 @@ export class Raw extends STSXNode {
 
 
 export class Include extends STSXNode {
-  constructor(public path: string) {
+  constructor(public path: string, public opts: {escape?: boolean} = {}) {
     super(null!)
   }
   render(out: Writable) {
@@ -156,7 +156,8 @@ export class Include extends STSXNode {
         // console.log(resolved)
         var found_file = pth.join(pth.dirname(resolved), rest.join(pth.sep))
         // console.log(found_file)
-        out.write(fs.readFileSync(found_file, 'utf-8'))
+        var read = fs.readFileSync(found_file, 'utf-8')
+        out.write(this.opts.escape ? read.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') : read)
       }
     }
   }
@@ -166,8 +167,8 @@ export class Include extends STSXNode {
  * Include a file contents, optionally html-escaped
  * @param path Path to the file to be included.
  */
-export function include(path: string) {
-  return new Include(path)
+export function include(path: string, opts: {escape?: boolean} = {}) {
+  return new Include(path, opts)
 }
 
 export function raw(s: string): STSXNode {
@@ -221,7 +222,7 @@ export interface Attrs extends EmptyAttributes {
   translate?: Null<'yes' | 'no'>
 
   class?: ClassDefinition | ClassDefinition[] // special attributes
-  style?: StyleDefinition
+  style?: Null<string>
 
   xmlns?: Null<string>
 }
